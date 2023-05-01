@@ -6,6 +6,7 @@ import {
   fetchPerson,
   selectPersonStatus,
   selectPerson,
+  personResetAction,
   useDispatch,
   useSelector,
 } from '../../store';
@@ -26,13 +27,17 @@ export const PersonPage = () => {
 
   useEffect(() => {
     dispatch(fetchPerson({ id }));
+    return () => {
+      dispatch(personResetAction());
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <Container sx={styles.container}>
       <Box sx={styles.content}>
-        {status === ERequestStatus.LOADING ? (
+        {status === ERequestStatus.LOADING ||
+        status === ERequestStatus.NOT_STARTED ? (
           <Typography variant='body1'>Loading...</Typography>
         ) : (
           <>

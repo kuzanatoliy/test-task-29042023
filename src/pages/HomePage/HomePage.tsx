@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -18,12 +18,13 @@ import {
   selectPersons,
   selectNextPersonsUrl,
   selectPreviousPersonsUrl,
+  personsResetAction,
   useDispatch,
   useSelector,
 } from '../../store';
-
 import * as styles from './HomePage.styles';
 import { ERequestStatus } from '../../types';
+import { extractIdFromUrl } from '../../utils';
 
 const DELAY = 500;
 
@@ -50,6 +51,14 @@ export const HomePage = () => {
     [search]
   );
 
+  useEffect(
+    () => () => {
+      dispatch(personsResetAction());
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   return (
     <Container sx={styles.container}>
       <TextField
@@ -69,13 +78,20 @@ export const HomePage = () => {
         }}
       />
       <Box sx={styles.content}>
-        {status === ERequestStatus.LOADING ? (
+        {status === ERequestStatus.LOADING ||
+        status === ERequestStatus.NOT_STARTED ? (
           <Typography variant='body1'>Loading...</Typography>
         ) : persons.length ? (
           <Grid container spacing={4}>
             {persons.map((person) => (
               <Grid key={person.created} item xs={3}>
-                <Button variant='outlined' fullWidth>
+                <Button
+                  onClick={() =>
+                    navigate(`/person/${extractIdFromUrl(person.url)}`)
+                  }
+                  variant='outlined'
+                  fullWidth
+                >
                   {person.name}
                 </Button>
               </Grid>
