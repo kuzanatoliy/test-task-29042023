@@ -1,12 +1,29 @@
 import { useState } from 'react';
-import { Container, TextField, InputAdornment } from '@mui/material';
+import {
+  Box,
+  Container,
+  TextField,
+  InputAdornment,
+  Typography,
+  Button,
+  Grid,
+} from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'react-use';
 
-import { fetchPersons, useDispatch } from '../../store';
+import {
+  fetchPersons,
+  selectPersonsStatus,
+  selectPersons,
+  selectNextPersonsUrl,
+  selectPreviousPersonsUrl,
+  useDispatch,
+  useSelector,
+} from '../../store';
 
 import * as styles from './HomePage.styles';
+import { ERequestStatus } from '../../types';
 
 const DELAY = 500;
 
@@ -14,6 +31,15 @@ export const HomePage = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
+  const navigate = useNavigate();
+  const status = useSelector(selectPersonsStatus);
+  const persons = useSelector(selectPersons);
+  const nextUrl = useSelector(selectNextPersonsUrl);
+  const previousUrl = useSelector(selectPreviousPersonsUrl);
+
+  if (status === ERequestStatus.ERROR) {
+    navigate('/error');
+  }
 
   useDebounce(
     () => {
@@ -42,6 +68,37 @@ export const HomePage = () => {
           ),
         }}
       />
+      <Box sx={styles.content}>
+        {status === ERequestStatus.LOADING ? (
+          <Typography variant='body1'>Loading...</Typography>
+        ) : persons.length ? (
+          <Grid container spacing={4}>
+            {persons.map((person) => (
+              <Grid key={person.created} item xs={3}>
+                <Button variant='outlined' fullWidth>
+                  {person.name}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <Typography variant='body1'>Not founded</Typography>
+        )}
+      </Box>
+      <Box sx={styles.nav}>
+        <Button
+          onClick={() => dispatch(fetchPersons({ url: previousUrl as string }))}
+          disabled={!previousUrl}
+        >
+          Back
+        </Button>
+        <Button
+          onClick={() => dispatch(fetchPersons({ url: nextUrl as string }))}
+          disabled={!nextUrl}
+        >
+          Next
+        </Button>
+      </Box>
     </Container>
   );
 };

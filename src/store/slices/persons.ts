@@ -33,12 +33,12 @@ export const fetchPersons = createAsyncThunk(
         )}&page=${page}`;
 
     const res = await fetch(requestUrl);
-    const { next, previous, result } = await res.json();
+    const { next, previous, results } = await res.json();
 
     return {
       next,
       previous,
-      persons: result,
+      persons: results,
     };
   }
 );
@@ -76,3 +76,6 @@ export const { reducer: personsReducer } = personsSlice;
 
 export const selectPersonsStatus = (state: TRootState) => state.persons.status;
 export const selectPersons = (state: TRootState) => state.persons.persons;
+export const selectNextPersonsUrl = (state: TRootState) => state.persons.next;
+export const selectPreviousPersonsUrl = (state: TRootState) =>
+  state.persons.previous;
