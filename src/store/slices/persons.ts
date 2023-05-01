@@ -28,9 +28,9 @@ export const fetchPersons = createAsyncThunk(
   async ({ url, search = '', page = 1 }: TPersonsFetchProps = {}) => {
     const requestUrl = url
       ? url
-      : `https://swapi.dev/api/people?search=${encodeURIComponent(
+      : `https://swapi.dev/api/people/?search=${encodeURIComponent(
           search
-        )}page=${page}`;
+        )}&page=${page}`;
 
     const res = await fetch(requestUrl);
     const { next, previous, result } = await res.json();
