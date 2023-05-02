@@ -1,12 +1,8 @@
-import {
-  Navigate,
-  RouterProvider,
-  createBrowserRouter,
-} from 'react-router-dom';
+import { Navigate, RouterProvider, createHashRouter } from 'react-router-dom';
 
 import { ErrorPage, HomePage, PersonPage } from './pages';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     children: [

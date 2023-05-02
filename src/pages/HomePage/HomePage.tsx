@@ -45,7 +45,7 @@ export const HomePage = () => {
   useDebounce(
     () => {
       dispatch(fetchPersons({ search }));
-      setSearchParams({ search });
+      setSearchParams(search ? { search } : {});
     },
     DELAY,
     [search]
